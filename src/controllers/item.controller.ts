@@ -1,11 +1,14 @@
 import {Request, Response} from "express"
 import { handleHttp } from "../utils/error.handle";
-import { insertCar, getCars, getCar, updateCar, deleteCar } from "../services/item.service";
+import { BaseService } from "../services/generic.service";
+import itemModel from "../models/item.model";
+
+const baseService = new BaseService(itemModel);
 
 const getItem = async (req:Request, res:Response) => {
     const id = req.params.id;
     try {
-        const response =  await getCar(id);
+        const response =  await baseService.findById(id);
         res.send(response);
     } catch (e) {
         handleHttp(res, 'ERROR_GET_ITEM');
@@ -13,7 +16,7 @@ const getItem = async (req:Request, res:Response) => {
 }
 const getItems = async (req:Request, res:Response) => {
     try {
-        const response = await getCars();
+        const response = await baseService.findAll();
         res.send(response);
     } catch (e) {
         handleHttp(res, 'ERROR_GET_ITEMS');
@@ -22,7 +25,7 @@ const getItems = async (req:Request, res:Response) => {
 
 const postItem = async ({ body}: Request, res:Response) => {
     try {
-        const responseItem = await insertCar(body);
+        const responseItem = await baseService.create(body);
         res.send(responseItem);
     } catch (e) {
         handleHttp(res, 'ERROR_POST_ITEM', e);
@@ -32,7 +35,7 @@ const postItem = async ({ body}: Request, res:Response) => {
 const updateItem = async(req:Request, res:Response) => {
     const id = req.params.id;
     try {
-        const response =  await updateCar(id, req.body);
+        const response =  await baseService.updateById(id, req.body);
         res.send(response);
         
     } catch (e) {
@@ -43,7 +46,7 @@ const updateItem = async(req:Request, res:Response) => {
 const deleteItem = async (req:Request, res:Response) => {
     const id = req.params.id;
     try {
-        const response =  await deleteCar(id);
+        const response =  await baseService.deleteById(id);
         res.send(response);
         
     } catch (e) {
